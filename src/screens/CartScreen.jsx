@@ -34,6 +34,10 @@ const CartScreen = ({ match, history, location }) => {
     dispatch(removeFromCart(id));
   };
 
+  const navigateToShipping = () => {
+    history.push("/shipping");
+  };
+
   return (
     <Row className="my-5">
       <Col md={8}>
@@ -108,7 +112,12 @@ const CartScreen = ({ match, history, location }) => {
                 </h5>
               </ListGroup.Item>
               <ListGroup.Item>
-                <Button variant="dark" block disabled={cartItems.length === 0}>
+                <Button
+                  variant="dark"
+                  block
+                  disabled={cartItems.length === 0}
+                  onClick={navigateToShipping}
+                >
                   PROCEED TO CHECKOUT
                 </Button>
               </ListGroup.Item>
