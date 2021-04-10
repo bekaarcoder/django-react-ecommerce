@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Row, Col, ListGroup, Image, Card, Button } from "react-bootstrap";
 import CheckoutSteps from "../components/CheckoutSteps";
 import Message from "../components/Message";
 import { Link } from "react-router-dom";
+import { createOrder, orderReset } from "../actions/orderActions";
 
-const PlaceOrderScreen = () => {
+const PlaceOrderScreen = ({ history }) => {
   const cart = useSelector((state) => state.cart);
   const { shippingAddress } = cart;
+
+  const orderCreate = useSelector((state) => state.orderCreate);
+  const { loading, success, error, order } = orderCreate;
+
+  const dispatch = useDispatch();
 
   cart.itemsPrice = cart.cartItems
     .reduce((acc, item) => acc + item.price * item.qty, 0)
@@ -23,12 +29,34 @@ const PlaceOrderScreen = () => {
     Number(cart.taxPrice)
   ).toFixed(2);
 
+  useEffect(() => {
+    if (success) {
+      history.push(`/order/${order._id}`);
+      dispatch(orderReset());
+    }
+  }, [success, history]);
+
+  const handlePlaceOrder = () => {
+    dispatch(
+      createOrder({
+        orderItems: cart.cartItems,
+        shippingAddress: cart.shippingAddress,
+        paymentMethod: cart.paymentMethod,
+        itemsPrice: cart.itemsPrice,
+        shippingPrice: cart.shippingPrice,
+        taxPrice: cart.taxPrice,
+        totalPrice: cart.totalPrice,
+      })
+    );
+  };
+
   return (
     <>
       <Row className="my-5 justify-content-center">
         <Col md={6}>
           <CheckoutSteps step1 step2 step3 step4 />
         </Col>
+        {error && <Message variant="danger">{error}</Message>}
       </Row>
       <Row>
         <Col md={8}>
@@ -107,7 +135,9 @@ const PlaceOrderScreen = () => {
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
-                <Button className="btn-block">Place Order</Button>
+                <Button className="btn-block" onClick={handlePlaceOrder}>
+                  Place Order
+                </Button>
               </ListGroup.Item>
             </ListGroup>
           </Card>

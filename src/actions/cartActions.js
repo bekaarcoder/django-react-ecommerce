@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   CART_ADD_ITEM,
   CART_REMOVE_ITEM,
+  CART_RESET,
   CART_SAVE_PAYMENT_METHOD,
   CART_SAVE_SHIPPING_ADDRESS,
 } from "../constants/types";
@@ -49,4 +50,13 @@ export const savePaymentMethod = (method) => async (dispatch) => {
   });
 
   localStorage.setItem("paymentMethod", method);
+};
+
+export const resetCart = () => async (dispatch) => {
+  dispatch({
+    type: CART_RESET,
+  });
+
+  localStorage.removeItem("paymentMethod");
+  localStorage.removeItem("cartItems");
 };
