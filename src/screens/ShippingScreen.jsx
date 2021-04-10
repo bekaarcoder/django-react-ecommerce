@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Col, Form, Row, Button } from "react-bootstrap";
 import { saveShippingAddress } from "../actions/cartActions";
+import CheckoutSteps from "../components/CheckoutSteps";
 
 const ShippingScreen = ({ history }) => {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const ShippingScreen = ({ history }) => {
   return (
     <Row className="my-5 justify-content-center">
       <Col md={6}>
+        <CheckoutSteps step1 step2 />
         <h2 className="my-3">SHIPPING</h2>
         <Form onSubmit={submitHandler}>
           <Form.Group>
