@@ -1,5 +1,8 @@
 import axios from "axios";
 import {
+    USER_DELETE_FAIL,
+    USER_DELETE_REQUEST,
+    USER_DELETE_SUCCESS,
     USER_DETAILS_FAIL,
     USER_DETAILS_REQUEST,
     USER_DETAILS_RESET,
@@ -17,6 +20,7 @@ import {
     USER_ORDERS_SUCCESS,
     USER_REGISTER_FAIL,
     USER_REGISTER_REQUEST,
+    USER_REGISTER_RESET,
     USER_REGISTER_SUCCESS,
     USER_UPDATE_DETAILS_FAIL,
     USER_UPDATE_DETAILS_REQUEST,
@@ -259,11 +263,49 @@ export const getUserList = () => async (dispatch, getState) => {
     }
 };
 
+export const deleteUser = (id) => async (dispatch, getState) => {
+    try {
+        dispatch({
+            type: USER_DELETE_REQUEST,
+        });
+
+        const {
+            user: { userInfo },
+        } = getState();
+
+        const config = {
+            headers: {
+                "Content-type": "application/json",
+                Authorization: `Bearer ${userInfo.token}`,
+            },
+        };
+
+        const { data } = await axios.delete(`/api/users/delete/${id}`, config);
+
+        dispatch({
+            type: USER_DELETE_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: USER_DELETE_FAIL,
+            payload:
+                error.response && error.response.data.detail
+                    ? error.response.data.detail
+                    : error.message,
+        });
+    }
+};
+
 export const logout = () => (dispatch) => {
     localStorage.removeItem("userInfo");
 
     dispatch({
         type: USER_LOGOUT,
+    });
+
+    dispatch({
+        type: USER_REGISTER_RESET,
     });
 
     dispatch({

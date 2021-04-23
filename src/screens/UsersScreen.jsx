@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
-import { getUserList } from "../actions/userActions";
+import { deleteUser, getUserList } from "../actions/userActions";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 
@@ -15,13 +15,22 @@ const UsersScreen = ({ history }) => {
     const user = useSelector((state) => state.user);
     const { userInfo } = user;
 
+    const userDelete = useSelector((state) => state.userDelete);
+    const { success } = userDelete;
+
     useEffect(() => {
         if (userInfo && userInfo.is_admin) {
             dispatch(getUserList());
         } else {
             history.push("/login");
         }
-    }, [dispatch, history, userInfo]);
+    }, [dispatch, history, userInfo, success]);
+
+    const handleDeleteUser = (id) => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            dispatch(deleteUser(id));
+        }
+    };
 
     return (
         <Row>
@@ -72,6 +81,9 @@ const UsersScreen = ({ history }) => {
                                             <Button
                                                 variant="danger"
                                                 className="btn-sm"
+                                                onClick={() =>
+                                                    handleDeleteUser(user._id)
+                                                }
                                             >
                                                 <i className="fas fa-trash"></i>
                                             </Button>

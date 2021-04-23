@@ -28,25 +28,25 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def registerUser(request):
     data = request.data
 
     try:
         user = User.objects.create(
-            first_name = data['name'],
-            username = data['email'],
-            email = data['email'],
-            password = make_password(data['password'])
+            first_name=data["name"],
+            username=data["email"],
+            email=data["email"],
+            password=make_password(data["password"]),
         )
         serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
     except:
-        message = {'detail': 'Email already exists.'}
+        message = {"detail": "Email already exists."}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def getUserProfile(request):
     user = request.user
@@ -54,7 +54,7 @@ def getUserProfile(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAdminUser])
 def getUsers(request):
     users = User.objects.all()
@@ -62,20 +62,30 @@ def getUsers(request):
     return Response(serializer.data)
 
 
-@api_view(['PUT'])
+@api_view(["PUT"])
 @permission_classes([IsAuthenticated])
 def updateUser(request):
     user = request.user
     serializer = UserSerializerWithToken(user, many=False)
 
     data = request.data
-    user.first_name = data['name']
-    user.email = data['email']
-    user.username = data['email']
+    user.first_name = data["name"]
+    user.email = data["email"]
+    user.username = data["email"]
 
-    if data['password'] != '':
-        user.password = make_password(data['password'])
+    if data["password"] != "":
+        user.password = make_password(data["password"])
 
     user.save()
 
     return Response(serializer.data)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def deleteUser(request, pk):
+    user = User.objects.get(id=pk)
+    user.delete()
+    return Response(
+        {"detail": "User deleted successfully."}, status=status.HTTP_200_OK
+    )
