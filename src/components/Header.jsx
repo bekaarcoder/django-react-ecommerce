@@ -5,46 +5,61 @@ import { LinkContainer } from "react-router-bootstrap";
 import { logout } from "../actions/userActions";
 
 const Header = () => {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.user);
-  const { userInfo } = user;
+    const user = useSelector((state) => state.user);
+    const { userInfo } = user;
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+    const handleLogout = () => {
+        dispatch(logout());
+    };
 
-  return (
-    <Navbar bg="dark" variant="dark">
-      <LinkContainer to="/">
-        <Navbar.Brand href="#home">Django Ecommerce</Navbar.Brand>
-      </LinkContainer>
-      <Nav className="mr-auto">
-        <Nav.Link href="#">All Categories</Nav.Link>
-      </Nav>
-      <Nav>
-        <LinkContainer to="/cart">
-          <Nav.Link href="#pricing">
-            <i className="fas fa-shopping-cart"></i> Cart
-          </Nav.Link>
-        </LinkContainer>
-        {userInfo ? (
-          <NavDropdown title={userInfo.name} id="username" alignRight>
-            <LinkContainer to="/profile">
-              <NavDropdown.Item>Profile</NavDropdown.Item>
+    return (
+        <Navbar bg="dark" variant="dark">
+            <LinkContainer to="/">
+                <Navbar.Brand href="#home">Django Ecommerce</Navbar.Brand>
             </LinkContainer>
-            <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
-          </NavDropdown>
-        ) : (
-          <LinkContainer to="/login">
-            <Nav.Link href="#features">
-              <i className="fas fa-user"></i> Login
-            </Nav.Link>
-          </LinkContainer>
-        )}
-      </Nav>
-    </Navbar>
-  );
+            <Nav className="mr-auto">
+                <Nav.Link href="#">All Categories</Nav.Link>
+            </Nav>
+            <Nav>
+                <LinkContainer to="/cart">
+                    <Nav.Link href="#pricing">
+                        <i className="fas fa-shopping-cart"></i> Cart
+                    </Nav.Link>
+                </LinkContainer>
+                {userInfo ? (
+                    <NavDropdown title={userInfo.name} id="username" alignRight>
+                        <LinkContainer to="/profile">
+                            <NavDropdown.Item>Profile</NavDropdown.Item>
+                        </LinkContainer>
+                        <NavDropdown.Item onClick={handleLogout}>
+                            Logout
+                        </NavDropdown.Item>
+                    </NavDropdown>
+                ) : (
+                    <LinkContainer to="/login">
+                        <Nav.Link href="#features">
+                            <i className="fas fa-user"></i> Login
+                        </Nav.Link>
+                    </LinkContainer>
+                )}
+                {userInfo && userInfo.is_admin && (
+                    <NavDropdown title="Admin" id="admin" alignRight>
+                        <LinkContainer to="/admin/users">
+                            <NavDropdown.Item>Users</NavDropdown.Item>
+                        </LinkContainer>
+                        <LinkContainer to="/orders">
+                            <NavDropdown.Item>Orders</NavDropdown.Item>
+                        </LinkContainer>
+                        <LinkContainer to="/products">
+                            <NavDropdown.Item>Products</NavDropdown.Item>
+                        </LinkContainer>
+                    </NavDropdown>
+                )}
+            </Nav>
+        </Navbar>
+    );
 };
 
 export default Header;
