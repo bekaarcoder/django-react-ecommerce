@@ -69,7 +69,7 @@ const UsersScreen = ({ history }) => {
                                         </td>
                                         <td>
                                             <LinkContainer
-                                                to={`/admin/user/${user._id}`}
+                                                to={`/admin/user/${user._id}/update`}
                                             >
                                                 <Button
                                                     variant="secondary"

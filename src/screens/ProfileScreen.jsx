@@ -36,7 +36,7 @@ const ProfileScreen = ({ history }) => {
         if (!userInfo) {
             history.push("/login");
         } else {
-            if (!user || !user.name || success) {
+            if (!user || !user.name || success || userInfo._id !== user._id) {
                 dispatch(resetUserUpdateDetails());
                 dispatch(getUserDetails("profile"));
             } else {

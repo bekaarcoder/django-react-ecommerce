@@ -26,6 +26,10 @@ import {
     USER_UPDATE_DETAILS_REQUEST,
     USER_UPDATE_DETAILS_RESET,
     USER_UPDATE_DETAILS_SUCCESS,
+    USER_UPDATE_FAIL,
+    USER_UPDATE_REQUEST,
+    USER_UPDATE_RESET,
+    USER_UPDATE_SUCCESS,
 } from "../constants/types";
 
 export const login = (email, password) => async (dispatch) => {
@@ -189,9 +193,60 @@ export const updateUserDetails = (user) => async (dispatch, getState) => {
     }
 };
 
+export const updateUser = (user) => async (dispatch, getState) => {
+    try {
+        console.log(user);
+        dispatch({
+            type: USER_UPDATE_REQUEST,
+        });
+
+        const {
+            user: { userInfo },
+        } = getState();
+
+        const config = {
+            headers: {
+                "Content-type": "application/json",
+                Authorization: `Bearer ${userInfo.token}`,
+            },
+        };
+
+        const { data } = await axios.put(
+            `/api/users/update/${user._id}`,
+            user,
+            config
+        );
+
+        dispatch({
+            type: USER_UPDATE_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: USER_UPDATE_FAIL,
+            payload:
+                error.response && error.response.data.detail
+                    ? error.response.data.detail
+                    : error.message,
+        });
+    }
+};
+
 export const resetUserUpdateDetails = () => (dispatch) => {
     dispatch({
         type: USER_UPDATE_DETAILS_RESET,
+    });
+};
+
+export const resetUserUpdate = () => (dispatch) => {
+    dispatch({
+        type: USER_UPDATE_RESET,
+    });
+};
+
+export const resetUserDetails = () => (dispatch) => {
+    dispatch({
+        type: USER_DETAILS_RESET,
     });
 };
 
