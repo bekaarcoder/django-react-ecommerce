@@ -2,7 +2,12 @@ import React, { useEffect } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
-import { listProducts } from "../actions/productActions";
+import {
+    createProduct,
+    deleteProduct,
+    listProducts,
+    resetCreateProductState,
+} from "../actions/productActions";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 
@@ -12,21 +17,53 @@ const ProductsListScreen = ({ history }) => {
     const productList = useSelector((state) => state.productList);
     const { loading, error, products } = productList;
 
+    const productDelete = useSelector((state) => state.productDelete);
+    const {
+        loading: loadingDelete,
+        error: errorDelete,
+        success: successDelete,
+    } = productDelete;
+
+    const productCreate = useSelector((state) => state.productCreate);
+    const {
+        loading: loadingCreate,
+        error: errorCreate,
+        success: successCreate,
+        product: createdProduct,
+    } = productCreate;
+
     const user = useSelector((state) => state.user);
     const { userInfo } = user;
 
     useEffect(() => {
-        if (userInfo && userInfo.is_admin) {
-            dispatch(listProducts());
-        } else {
+        dispatch(resetCreateProductState());
+
+        if (userInfo && !userInfo.is_admin) {
             history.push("/login");
         }
-    }, [dispatch, history, userInfo]);
+
+        if (successCreate) {
+            history.push(`/admin/product/${createdProduct._id}/edit`);
+        } else {
+            dispatch(listProducts());
+        }
+    }, [
+        dispatch,
+        history,
+        userInfo,
+        successCreate,
+        createdProduct,
+        successDelete,
+    ]);
 
     const handleDeleteProduct = (id) => {
         if (window.confirm("Are you sure you want to delete this user?")) {
-            console.log(1);
+            dispatch(deleteProduct(id));
         }
+    };
+
+    const handleCreateProduct = () => {
+        dispatch(createProduct());
     };
 
     return (
@@ -37,7 +74,9 @@ const ProductsListScreen = ({ history }) => {
                         <h2 className="my-4">Products</h2>
                     </Col>
                     <Col className="d-flex justify-content-end">
-                        <Button variant="dark">Create Product</Button>
+                        <Button variant="dark" onClick={handleCreateProduct}>
+                            Create Product
+                        </Button>
                     </Col>
                 </Row>
 
@@ -68,7 +107,7 @@ const ProductsListScreen = ({ history }) => {
                                         <td>{product.brand}</td>
                                         <td>
                                             <LinkContainer
-                                                to={`/admin/product/${product._id}/update`}
+                                                to={`/admin/product/${product._id}/edit`}
                                             >
                                                 <Button
                                                     variant="secondary"
